@@ -15,8 +15,33 @@ const LoginSignup = () => {
     state==="Login"?setState("SignUp"):setState("Login")
   }
 
-  const login=()=>{
-
+  const login= async()=>{
+    const url = 'http://localhost:5000/login'
+    const requestOptions={
+      method:'POST',
+      headers:{
+        'Accept':'application/json',
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify(formData)
+    }
+    await fetch(url,requestOptions)
+    .then((res)=>{
+      if(!res.ok){
+        throw new Error("Network response is not Ok.");
+      }
+      return res.json();
+    }).then((data)=>{
+      if(data.success){
+        localStorage.setItem('auth-token',data.token)
+        window.location.replace("/");
+      }
+      else{
+        alert("Wrong password");
+      }
+    }).catch(err=>{
+      console.error("Some error while authentication",err);
+    })
   }
   const signup= async()=>{
     const url = 'http://localhost:5000/signup'
