@@ -19,16 +19,58 @@ const ShopContextProvider=(props)=>{
     useEffect(()=>{
         fetch('http://localhost:5000/allproducts')
         .then((res)=>res.json()).then((data)=>setAll_products(data))
+
+        if(localStorage.getItem('auth-token')){
+            const url = fetch('http://localhost:5000/getcartdata');
+            const requestOptions = {
+                method:'POST',
+                headers:{
+                    'Accept':'application/form-data',
+                    'auth-token':`${localStorage.getItem('auth-token')}`,
+                    'Content-Type':'application/json'
+                },
+                body:"",
+            }
+            fetch(url,requestOptions).then((res)=>res.json())
+            .then((data)=>setcartItems(data));
+        }
     },[])
     // for adding something in cart
 
     const addtoCart = (itemId)=>{
         setcartItems((prev)=>({...prev,[itemId]:prev[itemId]+1}))
-        console.log(cartItems);
+        if(localStorage.getItem('auth-token')){
+            const url = 'http://localhost:5000/addtocart';
+            const requestOptions = {
+                method:'POST',
+                headers:{
+                    'Accept':'application/form-data',
+                    'auth-token':`${localStorage.getItem('auth-token')}`,
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify({"itemId":itemId})
+            }
+
+            fetch(url,requestOptions).then((res)=>res.json()).then((data)=>console.log(data));
+        }
     }
     // for removing something from cart
     const removefromCart = (itemId)=>{
         setcartItems((prev)=>({...prev,[itemId]:prev[itemId]-1}))
+        if(localStorage.getItem('auth-token')){
+            const url = 'http://localhost:5000/removefromcart';
+            const requestOptions = {
+                method:'POST',
+                headers:{
+                    'Accept':'application/form-data',
+                    'auth-token':`${localStorage.getItem('auth-token')}`,
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify({"itemId":itemId})
+            }
+
+            fetch(url,requestOptions).then((res)=>res.json()).then((data)=>console.log(data));
+        }
     }
     // function to get the total Amount
     const getTotalAmout = ()=>{
